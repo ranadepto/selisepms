@@ -1,0 +1,139 @@
+
+<div>
+  <div class="row">
+    <div class="col-md-12">
+      <button class="mb-3" [disabled]="totalEmptySlot<1" (click)="showAddVehicleModal()" nz-button nzType="primary" nzSize="large">
+        <span nz-icon nzType="plus"></span>
+        New Parking
+      </button>
+
+      <nz-modal [(nzVisible)]="isAddVehicleModalVisible" nzTitle="New Parking at Slot {{this.availableSlotID}}" (nzOnCancel)="handleCancel()" (nzOnOk)="addVehicle()">
+        <ng-container *nzModalContent>
+
+          <div class="login-form">
+
+            <nz-form-item>
+              <nz-form-label nzRequired [nzSm]="24" nzFor="vehicleLicenceNumber">Vehicle Licence Number</nz-form-label>
+              <nz-form-control nzErrorTip="The input is not valid!">
+                <input nz-input [(ngModel)]="newParking.vehicleLicenceNumber" id="vehicleLicenceNumber" />
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired [nzSm]="24" nzFor="vehicleOwnerName">Vehicle Owner Name</nz-form-label>
+              <nz-form-control nzErrorTip="The input is not valid!">
+                <input nz-input [(ngModel)]="newParking.vehicleOwnerName" id="vehicleOwnerName" />
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired [nzSm]="24" nzFor="vehicleType">Vehicle Type</nz-form-label>
+              <nz-form-control nzErrorTip="The input is not valid!">
+                <nz-radio-group [(ngModel)]="newParking.vehicleType">
+                  <label (select)="setParkingCharge()" (click)="setParkingCharge()" *ngFor="let item of vehicleTypeName; index as i;" nz-radio nzValue="{{item}}">{{item}}</label>
+                </nz-radio-group>
+<!--                <input nz-input [(ngModel)]="vehicleType" id="vehicleType" />-->
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired [nzSm]="24" nzFor="vehicleOwnerPhone">Vehicle Owner Phone</nz-form-label>
+              <nz-form-control nzErrorTip="The input is not valid!">
+                <input nz-input [(ngModel)]="newParking.vehicleOwnerPhone" id="vehicleOwnerPhone" />
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired [nzSm]="24" nzFor="carOwnerAddress">Car Owner Address</nz-form-label>
+              <nz-form-control nzErrorTip="The input is not valid!">
+                <input nz-input [(ngModel)]="newParking.carOwnerAddress" id="carOwnerAddress" />
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired [nzSm]="24" nzFor="parkingCharge">Parking Charge</nz-form-label>
+              <nz-form-control nzErrorTip="The input is not valid!">
+                <input nz-input [(ngModel)]="newParking.parkingCharge" id="parkingCharge" />
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired [nzSm]="24" nzFor="status">Status</nz-form-label>
+              <nz-form-control nzErrorTip="The input is not valid!">
+                <nz-radio-group [(ngModel)]="newParking.status">
+                  <label nz-radio nzValue="0">In</label>
+                  <label nz-radio nzValue="1">Out</label>
+                </nz-radio-group>
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired [nzSm]="24" nzFor="carEntry">Car Entry</nz-form-label>
+              <nz-form-control nzErrorTip="The input is not valid!">
+                <nz-date-picker
+                  nzShowTime
+                  nzFormat="yyyy-MM-dd HH:mm:ss"
+                  [(ngModel)]="newParking.carEntry"
+                  (ngModelChange)="onCarEntryChange($event)"
+                  (nzOnOk)="onCarEntryOk($event)"
+                ></nz-date-picker>
+
+<!--                <input nz-input [(ngModel)]="newParking.carEntry" id="carEntry" />-->
+              </nz-form-control>
+            </nz-form-item>
+
+            <nz-form-item>
+              <nz-form-label nzRequired [nzSm]="24" nzFor="carExit">Car Exit</nz-form-label>
+              <nz-form-control nzErrorTip="The input is not valid!">
+                <nz-date-picker
+                  nzShowTime
+                  nzFormat="yyyy-MM-dd HH:mm:ss"
+                  [(ngModel)]="newParking.carExit"
+                  (ngModelChange)="onCarExitChange($event)"
+                  (nzOnOk)="onCarExitOk($event)"
+                ></nz-date-picker>
+<!--                <input nz-input [(ngModel)]="newParking.carExit" id="carExit" />-->
+              </nz-form-control>
+            </nz-form-item>
+
+
+          </div>
+
+        </ng-container>
+      </nz-modal>
+
+
+    </div>
+
+
+    <nz-table #basicTable [nzData]="parkingList">
+      <thead>
+      <tr>
+        <th>Owner Name</th>
+        <th>Vehicle Type</th>
+        <th>License No</th>
+        <th>Entry Time</th>
+        <th>Exit Time</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let data of basicTable.data">
+        <td>{{ data.vehicleOwnerName }}</td>
+        <td>{{ data.vehicleType }}</td>
+        <td>{{ data.vehicleLicenceNumber }}</td>
+        <td>{{ data.carEntry }}</td>
+        <td>{{ data.carExit }}</td>
+        <td *ngIf="data.status == 0">In</td>
+        <td *ngIf="data.status == 1">Out</td>
+        <td>
+          <a *ngIf="data.status == 0">Edit</a>
+        </td>
+      </tr>
+      </tbody>
+    </nz-table>
+
+
+  </div>
+</div>
